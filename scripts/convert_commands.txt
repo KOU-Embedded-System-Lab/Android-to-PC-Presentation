@@ -1,0 +1,2 @@
+convert -scale 1280x800 -density 300 -quality 100 Hafta3.pdf png/x.png
+convert -scale 1280x800 -density 300 -compress zip -colors 256 Hafta3.pdf a/x.png
