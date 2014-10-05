@@ -48,6 +48,17 @@
             android:layout_height="40dp"
             android:src="@drawable/save" />
 
+        <FrameLayout
+            android:layout_width="40dp"
+            android:layout_height="40dp" >
+            <ProgressBar
+                android:id="@+id/progressBar_sync"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:indeterminateBehavior="repeat" />
+        </FrameLayout>
+
     </LinearLayout>
 
 	<RelativeLayout

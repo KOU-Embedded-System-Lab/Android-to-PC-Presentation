@@ -18,6 +18,8 @@ package com.example.presentation.android;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.example.presentation.Config;
 import com.example.presentation.shared.InputHistory;
@@ -68,6 +70,17 @@ public class SlideView extends View {
 	public SlideView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setupDrawing();
+		
+		TimerTask timerTask = new TimerTask() {
+			@Override
+			public void run() {
+				inputHistory.addRefresh();
+				inputSyncAndroid.sync(inputHistory);
+			}
+		};
+		Timer timer = new Timer();
+		timer.scheduleAtFixedRate(timerTask, 0, 250);
+
 	}
 
 	private void setupDrawing() {
@@ -337,5 +350,4 @@ public class SlideView extends View {
 			return;
 		doChangeSlide(_currSlideNo);
 	}
-	
 }

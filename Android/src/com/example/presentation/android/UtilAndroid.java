@@ -27,8 +27,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Debug;
 import android.util.Log;
+import android.view.View;
+import android.webkit.WebView.FindListener;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.presentation.R;
 import com.example.presentation.shared.AbstractImageFunctions;
 
 public class UtilAndroid {
@@ -53,13 +57,33 @@ public class UtilAndroid {
 		UtilAndroid.activity = activity;
 	}
 	
+	private static boolean syncError;
+	
+	public static void setSyncError(boolean error) {
+		UtilAndroid.syncError = error;
+	}
+	
+	public static void syncInfo(final boolean running) {
+		final ProgressBar progressBar = (ProgressBar)activity.findViewById(R.id.progressBar_sync);
+
+		activity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (syncError || running)
+					progressBar.setVisibility(View.VISIBLE);
+				else
+					progressBar.setVisibility(View.GONE);
+			}
+		});
+	}
+	
 	public static void errorMessage(final String s) {
 		if (context != null) {
 			Log.i("tnr", "errorMessage created: " + s);
 			activity.runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					Toast.makeText(context, "error: " + s, Toast.LENGTH_LONG).show();
+					//Toast.makeText(context, "error: " + s, Toast.LENGTH_LONG).show();
 				}
 			});
 		}

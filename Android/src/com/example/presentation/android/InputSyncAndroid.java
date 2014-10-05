@@ -48,27 +48,33 @@ public class InputSyncAndroid implements Runnable {
 		inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 	}
 	
-
 	public void run() {
 		Log.i("tnr", "InputSyncAndroid.run()");
 		while (true) {
 			try {
 				while (true) {
-					Object o = sendBuffer.take();
+					Object o = sendBuffer.poll();
+					if (o == null) {
+						UtilAndroid.syncInfo(false);
+						o = sendBuffer.take();
+					}
 					Log.i("tnr", "sending object");
 					connect();
 					outToServer.writeObject(o);
 					Util.randomFault(RANDOM_FAULT_N, 1);
 					String serverResponse = inFromServer.readLine();
-					if (!serverResponse.equals("ok")) {
+					if (serverResponse.equals("ok")) {
+						UtilAndroid.setSyncError(false);
+					} else {
 						Log.i("tnr", "serverResponse: " + serverResponse);
 						UtilAndroid.errorMessage(serverResponse);
-					}
+					} 
 
 					Util.randomFault(RANDOM_FAULT_N, 2);
 					clientSocket.close();
 				}
 			} catch (Exception e) {
+				UtilAndroid.setSyncError(true);
 				System.out.println("client >> " + e);
 				
 			} finally {
@@ -80,7 +86,6 @@ public class InputSyncAndroid implements Runnable {
 	}
 	
 	public void sync(InputHistory inputHistory) {
-		
 		for (Object event : inputHistory.events) {
 			InputSyncPackage p = new InputSyncPackage(event);
 			sendBuffer.offer(p);

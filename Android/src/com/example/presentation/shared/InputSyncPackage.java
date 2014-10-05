@@ -25,6 +25,8 @@ public class InputSyncPackage implements Serializable {
 	public InputHistory.TouchRecord touchRecord;
 
 	public InputSyncPackage(Object object) {
+		if (object == null)
+			return;
 		if (object.getClass() == InputHistory.ModeSelect.class)
 			this.modeSelect = (InputHistory.ModeSelect)object;
 		if (object.getClass() == InputHistory.TouchRecord.class)

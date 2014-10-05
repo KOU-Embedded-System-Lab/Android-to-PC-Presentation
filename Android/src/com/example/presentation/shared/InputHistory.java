@@ -21,6 +21,10 @@ import java.util.ArrayList;
 
 public class InputHistory {
 	
+	public void addRefresh() {
+		events.add(null);
+	}
+	
 	public void setStrokeWidth(int value) {
 		events.add(new ModeSelect(ModeSelect.Type.STROKE_WIDTH.ordinal(), value));	
 	}
