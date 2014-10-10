@@ -1,5 +1,5 @@
-Android2PC-Presentation
-=======================
+Android to PC Presentation
+==========================
 
 Synchronized presentation and drawing (handwriting) software for Android & PC.
 
