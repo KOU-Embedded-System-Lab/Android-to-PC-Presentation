@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.example.presentation.android;
+package android_to_pc_presentation.android;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -22,13 +22,12 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.example.presentation.Config;
-import com.example.presentation.shared.InputHistory;
-import com.example.presentation.shared.InputSyncPackage;
-import com.example.presentation.shared.Util;
 
 import android.util.Log;
 import android.widget.Toast;
+import android_to_pc_presentation.shared.InputHistory;
+import android_to_pc_presentation.shared.InputSyncPackage;
+import android_to_pc_presentation.shared.Util;
 
 public class InputSyncAndroid implements Runnable {
 

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.example.presentation;
+package android_to_pc_presentation.PC;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -22,8 +22,6 @@ import java.io.IOException;
 
 import javax.swing.BoxLayout;
 
-import com.example.presentation.PC.ConfigPC;
-import com.example.presentation.PC.SlideView;
 
 public class MainWindow {
 

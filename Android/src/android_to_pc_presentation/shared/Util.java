@@ -14,21 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.example.presentation.android;
+package android_to_pc_presentation.shared;
 
-import com.example.presentation.shared.SlideBase;
+import java.util.Random;
 
-import android.graphics.Bitmap;
-
-public class Slide extends SlideBase<Bitmap> {
-
-	public Slide(String backgroundFilePath) {
-		super(UtilAndroid.imageFunctons, backgroundFilePath);
-	}
-	
-	@Override
-	public void saveDrawImage() {
-		// android uygulamasinda degisiklikler kaydedilmeyecek. her slayt gecisinde resim tekrar indiriliyor
+public class Util {
+	public static void randomFault(int n, int no) throws Exception {
+		if (n == 0)
+			return;
+		Random random = new Random();
+		if (random.nextInt(n) == 0)
+			throw new Exception("randomFault: " + no);
 	}
 	
 }

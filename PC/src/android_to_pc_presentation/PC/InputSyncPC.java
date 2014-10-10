@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.example.presentation.PC;
+package android_to_pc_presentation.PC;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -27,8 +27,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Random;
 
-import com.example.presentation.shared.InputHistory;
-import com.example.presentation.shared.InputSyncPackage;
+import android_to_pc_presentation.shared.InputHistory;
+import android_to_pc_presentation.shared.InputSyncPackage;
 
 public class InputSyncPC {
 	

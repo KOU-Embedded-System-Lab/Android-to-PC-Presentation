@@ -1,4 +1,4 @@
-package com.example.presentation.shared;
+package android_to_pc_presentation.shared;
 
 public abstract class AbstractImageFunctions<ImageClassType> {
 	public abstract ImageClassType readImage(String path, boolean editable);

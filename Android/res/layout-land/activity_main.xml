@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="#FFCCCCCC"
     android:orientation="horizontal"
-    tools:context="com.example.presentation.MainActivity" >
+    tools:context="android_to_pc_presentation.android.MainActivity" >
 
 	<LinearLayout
 	    android:layout_width="50dp"
@@ -67,7 +67,7 @@
 	    android:layout_weight="1"
 	    >
 
-		<com.example.presentation.android.SlideView
+		<android_to_pc_presentation.android.SlideView
 		    android:id="@+id/drawing"
 		    android:layout_width="fill_parent"
 		    android:layout_centerInParent="true"

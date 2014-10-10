@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.example.presentation.android;
+package android_to_pc_presentation.android;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -31,9 +31,7 @@ import android.view.View;
 import android.webkit.WebView.FindListener;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import com.example.presentation.R;
-import com.example.presentation.shared.AbstractImageFunctions;
+import android_to_pc_presentation.shared.AbstractImageFunctions;
 
 public class UtilAndroid {
 	public static void logHeap() {

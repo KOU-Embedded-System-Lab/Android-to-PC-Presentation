@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.example.presentation.PC;
+package android_to_pc_presentation.PC;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -30,8 +30,8 @@ import java.util.TimerTask;
 
 import javax.swing.JPanel;
 
-import com.example.presentation.shared.DrawingFunctons;
-import com.example.presentation.shared.InputHistory;
+import android_to_pc_presentation.shared.DrawingFunctons;
+import android_to_pc_presentation.shared.InputHistory;
 
 public class SlideView extends JPanel {
 	

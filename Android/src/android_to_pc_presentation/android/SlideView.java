@@ -14,16 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.example.presentation.android;
+package android_to_pc_presentation.android;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.example.presentation.Config;
-import com.example.presentation.shared.InputHistory;
-import com.example.presentation.shared.DrawingFunctons;
 
 import android.app.Activity;
 import android.content.Context;
@@ -40,6 +37,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+import android_to_pc_presentation.shared.DrawingFunctons;
+import android_to_pc_presentation.shared.InputHistory;
 
 public class SlideView extends View {
 	
