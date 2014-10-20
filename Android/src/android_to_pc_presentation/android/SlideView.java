@@ -45,7 +45,7 @@ public class SlideView extends View {
 	// FIXME: silginin orantilamasi yapilmiyor. Ekran kucuk oldugunda yine ayni stroke width var.
 	
 	public DrawingFunctons df = new DrawingFunctons();
-	public InputHistory inputHistory = new InputHistory();
+	private InputHistory inputHistory = new InputHistory();
 	public InputSyncAndroid inputSyncAndroid = new InputSyncAndroid();
 	
 	/** tablette gorunen slayt katmani */
@@ -73,8 +73,10 @@ public class SlideView extends View {
 		TimerTask timerTask = new TimerTask() {
 			@Override
 			public void run() {
-				inputHistory.addRefresh();
-				inputSyncAndroid.sync(inputHistory);
+				synchronized (inputHistory) {
+					inputHistory.addRefresh();
+					inputSyncAndroid.sync(inputHistory);	
+				}
 			}
 		};
 		Timer timer = new Timer();
@@ -123,8 +125,10 @@ public class SlideView extends View {
 		float y = event.getY()*yRatio;
 		
 		if (event.getAction() == MotionEvent.ACTION_UP || prevTouchX != x || prevTouchY != y) {
-			inputHistory.addTouch(0, event.getAction(), x, y);
-			inputSyncAndroid.sync(inputHistory);
+			synchronized (inputHistory) {
+				inputHistory.addTouch(0, event.getAction(), x, y);
+				inputSyncAndroid.sync(inputHistory);
+			}
 			doTouchEvent(event.getAction(), x, y);
 		}
 		
@@ -266,28 +270,36 @@ public class SlideView extends View {
 	}
 	
 	public void setPaintColor(String newColor) {
-		inputHistory.setPaintColor(newColor);
-		inputSyncAndroid.sync(inputHistory);
+		synchronized (inputHistory) {
+			inputHistory.setPaintColor(newColor);
+			inputSyncAndroid.sync(inputHistory);
+		}
 		df.setPaintColor(newColor);
 	}
 
 	public void setSelectEraser() {
-		inputHistory.selectEraser();
-		inputSyncAndroid.sync(inputHistory);
+		synchronized (inputHistory) {
+			inputHistory.selectEraser();
+			inputSyncAndroid.sync(inputHistory);
+		}
 		df.selectEraser();
 	}
 	
 	public void setSelectPen() {
-		inputHistory.selectPen();
-		inputSyncAndroid.sync(inputHistory);
+		synchronized (inputHistory) {
+			inputHistory.selectPen();
+			inputSyncAndroid.sync(inputHistory);
+		}
 		df.selectPen();
 	}
 	
 	public void changeSlide(int no) {
 		if (no < 0 || no >= slides.size())
 			return;
-		inputHistory.changeSlide(no);
-		inputSyncAndroid.sync(inputHistory);
+		synchronized (inputHistory) {
+			inputHistory.changeSlide(no);
+			inputSyncAndroid.sync(inputHistory);
+		}
 		doChangeSlide(no);
 		UtilAndroid.logHeap();
 	}
@@ -314,10 +326,11 @@ public class SlideView extends View {
 		Log.i("tnr", "SlideView.loadSlides()");
 		
 		slides.subList(0, slides.size()).clear();
-		inputHistory.clear();
-		inputHistory.loadSlides(slideCount);
-		inputSyncAndroid.sync(inputHistory);
-		
+		synchronized (inputHistory) {
+			inputHistory.clear();
+			inputHistory.loadSlides(slideCount);
+			inputSyncAndroid.sync(inputHistory);
+		}
 		for (int i = 0 ; i < slideCount ; i++) {
 			String fileName = "x-"+i+".png";
 			File f = new File(path + fileName);
@@ -336,12 +349,16 @@ public class SlideView extends View {
 	
 	public void incStrokeWidth() {
 		df.incStrokeWidth();
-		inputSyncAndroid.sync(inputHistory);
+		synchronized (inputHistory) {
+			inputSyncAndroid.sync(inputHistory);
+		}
 	}
 	
 	public void decStrokeWidth() {
 		df.decStrokeWidth();
-		inputSyncAndroid.sync(inputHistory);
+		synchronized (inputHistory) {
+			inputSyncAndroid.sync(inputHistory);
+		}
 	}
 
 	public void redrawCurrSlide() {
