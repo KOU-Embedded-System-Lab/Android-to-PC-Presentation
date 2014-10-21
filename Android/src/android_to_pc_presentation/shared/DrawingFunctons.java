@@ -56,6 +56,10 @@ public class DrawingFunctons {
 		strokeWidth -= 1;
 	}
 	
+	public void setStrokeWidth(float w) {
+		strokeWidth = w;
+	}
+	
 	public float getStrokeWidth() {
 		return strokeWidth;
 	}

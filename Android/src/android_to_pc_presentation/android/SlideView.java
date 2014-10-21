@@ -360,6 +360,8 @@ public class SlideView extends View {
 	public void incStrokeWidth() {
 		df.incStrokeWidth();
 		synchronized (inputHistory) {
+			// FIXME: int vs float ?
+			inputHistory.setStrokeWidth((int)df.getStrokeWidth());
 			inputSyncAndroid.sync(inputHistory);
 		}
 	}
@@ -367,6 +369,8 @@ public class SlideView extends View {
 	public void decStrokeWidth() {
 		df.decStrokeWidth();
 		synchronized (inputHistory) {
+			// FIXME: int vs float ?
+			inputHistory.setStrokeWidth((int)df.getStrokeWidth());
 			inputSyncAndroid.sync(inputHistory);
 		}
 	}

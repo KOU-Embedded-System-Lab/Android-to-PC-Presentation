@@ -155,6 +155,7 @@ public class SlideView extends JPanel {
 			eraserPaint.getScled(1.0f/getXRatio()).setPaintTo(g2);
 		else {
 			drawPaint.setColor(Color.decode("0x"+df.getPaintColor_rgb_hex()));
+			drawPaint.setStrokeWidth(df.getStrokeWidth());
 			drawPaint.getScled(1.0f/getXRatio()).setPaintTo(g2);
 		}
 		g2.draw(drawPathScaled);
@@ -242,6 +243,7 @@ public class SlideView extends JPanel {
 				eraserPaint.setPaintTo(orig);
 			} else {
 				drawPaint.setColor(Color.decode("0x"+df.getPaintColor_rgb_hex()));
+				drawPaint.setStrokeWidth(df.getStrokeWidth());
 				drawPaint.getScled(1.0f/getXRatio()).setPaintTo(drawImageScaled);
 				drawPaint.setPaintTo(orig);
 			}
@@ -297,8 +299,10 @@ public class SlideView extends JPanel {
 		doChangeSlide(0);
 	}
 	
+	// TODO: bu fonksiyon kaldirilip, baska yerde islem yapilacak
 	public void setStrokeWidth(float w) {
-		drawPaint.setStrokeWidth(w);
+		System.out.println("setStrokeWidth " + w);
+		df.setStrokeWidth(w);
 	}
 	
 }
