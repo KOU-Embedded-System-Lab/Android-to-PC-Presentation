@@ -36,15 +36,15 @@ public class DrawingFunctons {
 	}
 	
 	public void setPaintColor(String newColor) {
+		assert newColor.length() == 9;
 		paintColor = newColor;
 	}
 	
-	public String getPaintColor() {
+	public String getPaintColor_argb_html() {
 		return paintColor;
 	}
 	
-	public String getPaintColor_rgb() {
-		assert paintColor.length() == 9;
+	public String getPaintColor_rgb_hex() {
 		return paintColor.substring(3);
 	}
 	

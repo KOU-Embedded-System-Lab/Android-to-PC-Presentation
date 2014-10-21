@@ -50,7 +50,7 @@ public class InputSyncPC {
 				String strColor = Integer.toHexString(rec.getValue()&0xffffff);
 				while (strColor.length() < 6)
 					strColor = "0" + strColor; // 6 karakterden kucukse basina ekle
-				slideView.df.setPaintColor("#" + strColor);
+				slideView.df.setPaintColor("#00" + strColor);
 			} else if (rec.isSelectPen()) {
 				slideView.doSelectPen();
 			} else if (rec.isSelectEraser()) {
@@ -60,6 +60,8 @@ public class InputSyncPC {
 				slideView.loadSlides(ConfigPC.PATH + "/", rec.getValue());
 			} else if (rec.isStrokeWidth()) {
 				slideView.setStrokeWidth(rec.getValue());
+			} else {
+				System.out.println("unknown modeselect");
 			}
 		} else if (event.getClass() == InputHistory.TouchRecord.class) {
 			InputHistory.TouchRecord rec = (InputHistory.TouchRecord) event;
@@ -153,7 +155,7 @@ public class InputSyncPC {
 					try {
 						packageReceived(p);
 					} catch (Exception e) {
-						System.out.println("error");
+						System.out.println("error: " + e.toString());
 						error = true;
 					}
 					

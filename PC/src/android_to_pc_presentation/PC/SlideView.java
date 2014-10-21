@@ -88,7 +88,7 @@ public class SlideView extends JPanel {
 	
 	void setupDrawing() {
 		drawPaint = new CustomPaint(4f, BasicStroke.CAP_ROUND, BasicStroke.CAP_ROUND,
-					Color.decode(df.getPaintColor_rgb()),
+					Color.decode("0x"+df.getPaintColor_rgb_hex()),
 					new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON),
 					AlphaComposite.Src
 					);
@@ -153,8 +153,10 @@ public class SlideView extends JPanel {
 		/* son cizimi ekrana ciz */
 		if (df.isEraserMode())
 			eraserPaint.getScled(1.0f/getXRatio()).setPaintTo(g2);
-		else
-			drawPaint.getScled(1.0f/getXRatio()).setPaintTo(g2);	
+		else {
+			drawPaint.setColor(Color.decode("0x"+df.getPaintColor_rgb_hex()));
+			drawPaint.getScled(1.0f/getXRatio()).setPaintTo(g2);
+		}
 		g2.draw(drawPathScaled);
 	
 	}
@@ -239,6 +241,7 @@ public class SlideView extends JPanel {
 				eraserPaint.getScled(1.0f/getXRatio()).setPaintTo(scaled);
 				eraserPaint.setPaintTo(orig);
 			} else {
+				drawPaint.setColor(Color.decode("0x"+df.getPaintColor_rgb_hex()));
 				drawPaint.getScled(1.0f/getXRatio()).setPaintTo(drawImageScaled);
 				drawPaint.setPaintTo(orig);
 			}

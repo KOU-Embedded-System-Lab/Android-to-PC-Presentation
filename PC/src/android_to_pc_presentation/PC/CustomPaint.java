@@ -23,12 +23,12 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
 class CustomPaint {
-	Composite composite;
-	Color color;
-	float strokeWidth;
-	int strokeCap;
-	int strokeRound;
-	RenderingHints renderingHints;
+	private Composite composite;
+	private Color color;
+	private float strokeWidth;
+	private int strokeCap;
+	private int strokeRound;
+	private RenderingHints renderingHints;
 	
 	public CustomPaint(float strokeWidth, int strokeCap, int strokeRound, Color color, RenderingHints renderingHints, Composite composite) {
 		this.strokeWidth = strokeWidth;
@@ -58,6 +58,10 @@ class CustomPaint {
 	
 	public void setStrokeWidth(float w) {
 		strokeWidth = w;
+	}
+	
+	public void setColor(Color color) {
+		this.color = color;
 	}
 	
 	public CustomPaint getScled(float scale) {

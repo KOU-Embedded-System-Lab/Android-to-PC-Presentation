@@ -74,7 +74,7 @@ public class InputSyncAndroid implements Runnable {
 				}
 			} catch (Exception e) {
 				UtilAndroid.setSyncError(true);
-				System.out.println("client >> " + e);
+				Log.i("tnr", "client >> " + e);
 				
 			} finally {
 				try {
@@ -86,10 +86,12 @@ public class InputSyncAndroid implements Runnable {
 	
 	public void sync(InputHistory inputHistory) {
 		for (Object event : inputHistory.events) {
+			// Log.i("tnr", "sync");
+			// UtilAndroid.logHeap();
 			InputSyncPackage p = new InputSyncPackage(event);
 			sendBuffer.offer(p);
 		}
-		inputHistory.events.clear();
+		inputHistory.events.clear();	
 	}
 
 }

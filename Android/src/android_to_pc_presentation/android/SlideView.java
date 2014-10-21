@@ -80,7 +80,7 @@ public class SlideView extends View {
 			}
 		};
 		Timer timer = new Timer();
-		timer.scheduleAtFixedRate(timerTask, 0, 250);
+		timer.scheduleAtFixedRate(timerTask, 0, Config.SLIDE_VIEW_REFRESH_MS);
 
 	}
 
@@ -89,7 +89,7 @@ public class SlideView extends View {
 		drawPathOrig = new Path();
 
 		drawPaint = new Paint();
-		drawPaint.setColor(Color.parseColor(df.getPaintColor()));
+		drawPaint.setColor(Color.parseColor(df.getPaintColor_argb_html()));
 		drawPaint.setAntiAlias(true);
 		drawPaint.setStrokeWidth(df.getStrokeWidth());
 		drawPaint.setStyle(Paint.Style.STROKE);
@@ -162,7 +162,7 @@ public class SlideView extends View {
 		if (df.isEraserMode()) {
 			canvas.drawPath(drawPathScaled, eraserPaint);
 		} else {
-			drawPaint.setColor(Color.parseColor(df.getPaintColor()));
+			drawPaint.setColor(Color.parseColor(df.getPaintColor_argb_html()));
 			drawPaint.setStrokeWidth(df.getScaledStrokeWidth(getXRatio()));
 			canvas.drawPath(drawPathScaled, drawPaint);
 			drawPaint.setStrokeWidth(df.getStrokeWidth());
@@ -328,6 +328,16 @@ public class SlideView extends View {
 		slides.subList(0, slides.size()).clear();
 		synchronized (inputHistory) {
 			inputHistory.clear();
+			
+			// aktif ayarlari karsiya gondermek icin ekle
+			inputHistory.setPaintColor(df.getPaintColor_argb_html());
+			if (df.isEraserMode())
+				inputHistory.selectEraser();
+			else
+				inputHistory.selectPen();
+			// FIXME: int vs. float ?
+			inputHistory.setStrokeWidth((int)df.getStrokeWidth());
+
 			inputHistory.loadSlides(slideCount);
 			inputSyncAndroid.sync(inputHistory);
 		}
