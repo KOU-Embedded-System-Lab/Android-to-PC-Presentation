@@ -26,30 +26,34 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Random;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import android_to_pc_presentation.shared.InputHistory;
 import android_to_pc_presentation.shared.InputSyncPackage;
+import android_to_pc_presentation.shared.InputSyncPackageList;
 
 public class InputSyncPC {
-	
+
 	SlideView slideView;
 	String redrawFile;
-	
+
 	public InputSyncPC(SlideView slideView, String redrawFile) {
 		this.slideView = slideView;
 		this.redrawFile = redrawFile;
 	}
-	
-	void runHistoryRecord(Object event) throws Exception {
 
+	void runHistoryRecord(Object event) throws Exception {
+		// System.out.println("runHistoryRecord");
 		if (event.getClass() == InputHistory.ModeSelect.class) {
 			InputHistory.ModeSelect rec = (InputHistory.ModeSelect) event;
 			if (rec.isChangeSlide()) {
 				slideView.doChangeSlide(rec.getValue());
 			} else if (rec.isPaintColor()) {
-				String strColor = Integer.toHexString(rec.getValue()&0xffffff);
+				String strColor = Integer
+						.toHexString(rec.getValue() & 0xffffff);
 				while (strColor.length() < 6)
-					strColor = "0" + strColor; // 6 karakterden kucukse basina ekle
+					strColor = "0" + strColor; // 6 karakterden kucukse basina
+												// ekle
 				slideView.df.setPaintColor("#00" + strColor);
 			} else if (rec.isSelectPen()) {
 				slideView.doSelectPen();
@@ -65,7 +69,8 @@ public class InputSyncPC {
 			}
 		} else if (event.getClass() == InputHistory.TouchRecord.class) {
 			InputHistory.TouchRecord rec = (InputHistory.TouchRecord) event;
-			// System.out.println("slideView.doTouchEvent" + rec.x + " " + rec.y);
+			// System.out.println("slideView.doTouchEvent" + rec.x + " " +
+			// rec.y);
 			slideView.doTouchEvent(rec.action, rec.x, rec.y);
 		} else {
 			System.out.println("InputSync.runHistoryRecord() unknown");
@@ -81,46 +86,65 @@ public class InputSyncPC {
 			runHistoryRecord(p.touchRecord);
 		}
 	}
-	
-   private static class AppendableObjectOutputStream extends ObjectOutputStream {
-      public AppendableObjectOutputStream(OutputStream out) throws IOException {
-        super(out);
-      }
 
-      @Override
-      protected void writeStreamHeader() throws IOException {}
-    }
+	private static class AppendableObjectOutputStream extends ObjectOutputStream {
+		public AppendableObjectOutputStream(OutputStream out) throws IOException {
+			super(out);
+		}
 
-	public void packageReceived(InputSyncPackage p) throws Exception {
-		doPackageReceived(p);
-
-		File file = new File(redrawFile);
-		ObjectOutputStream objectOutputStream;
-		if (!file.exists())
-			objectOutputStream = new ObjectOutputStream(new FileOutputStream(redrawFile));
-		else
-			objectOutputStream = new AppendableObjectOutputStream( new FileOutputStream(redrawFile, true));
-		objectOutputStream.writeObject(p);
-		objectOutputStream.flush();
+		@Override
+		protected void writeStreamHeader() throws IOException {
+		}
 	}
-	
-//	public void redrawFromFile() {
-//		if (redrawFile.equals(""))
-//			return;
-//		try {
-//			FileInputStream fis = new FileInputStream(redrawFile);
-//			ObjectInputStream objectInputStream = new ObjectInputStream(fis);
-//			InputSyncPackage o;
-//			while ( true ) {
-//				o = (InputSyncPackage) objectInputStream.readObject();
-//				doPackageReceived(o);
-//			}	
-//		} catch (Exception e) {
-//			System.out.println(e.toString());
-//			e.printStackTrace();
-//		}
-//	}
-	
+
+	long lastReceivedObject = -1;
+	long lastReceivedObjectTime = 0;
+	public void packageReceived(InputSyncPackageList list) throws Exception {
+		System.out.println("packageReceived: " + list.list.size());
+
+		int samePackageCount = 0;
+		for (InputSyncPackage p : list.list) {
+			if (p.no != 0 && p.no <= lastReceivedObject) {
+				samePackageCount++;
+				continue;
+			}
+			
+			if (p.no == 0 && (System.currentTimeMillis() - lastReceivedObjectTime) < 500 )
+				continue;
+			
+			lastReceivedObjectTime = System.currentTimeMillis();
+			lastReceivedObject = p.no;
+			doPackageReceived(p);
+
+			File file = new File(redrawFile);
+			ObjectOutputStream objectOutputStream;
+			if (!file.exists())
+				objectOutputStream = new ObjectOutputStream(new FileOutputStream(redrawFile));
+			else
+				objectOutputStream = new AppendableObjectOutputStream(new FileOutputStream(redrawFile, true));
+			objectOutputStream.writeObject(p);
+			objectOutputStream.flush();
+		}
+		System.out.println("received old package count: " + samePackageCount);
+	}
+
+	// public void redrawFromFile() {
+	// if (redrawFile.equals(""))
+	// return;
+	// try {
+	// FileInputStream fis = new FileInputStream(redrawFile);
+	// ObjectInputStream objectInputStream = new ObjectInputStream(fis);
+	// InputSyncPackage o;
+	// while ( true ) {
+	// o = (InputSyncPackage) objectInputStream.readObject();
+	// doPackageReceived(o);
+	// }
+	// } catch (Exception e) {
+	// System.out.println(e.toString());
+	// e.printStackTrace();
+	// }
+	// }
+
 	protected Socket connectionSocket;
 	protected ObjectInputStream inFromClient;
 	protected DataOutputStream outToClient;
@@ -135,6 +159,9 @@ public class InputSyncPC {
 
 	static final int FAULT_N = 0;
 
+	protected LinkedBlockingQueue<InputSyncPackageList> receiveBuffer = new LinkedBlockingQueue<InputSyncPackageList>();
+
+	/* network thread function */
 	public boolean run() {
 		ServerSocket serverSocket;
 		try {
@@ -148,23 +175,15 @@ public class InputSyncPC {
 				while (true) {
 					connect(serverSocket);
 					randomFault(FAULT_N, 1);
-					InputSyncPackage p = (InputSyncPackage)inFromClient.readObject();
-					randomFault(FAULT_N, 2);
-					// System.out.println("InputSyncPackage received");
-					boolean error = false;
-					try {
-						packageReceived(p);
-					} catch (Exception e) {
-						System.out.println("error: " + e.toString());
-						error = true;
-					}
-					
-					if (error)
-						outToClient.writeBytes("exception\n");
-					else
-						outToClient.writeBytes("ok\n");
 
+					InputSyncPackageList list = (InputSyncPackageList) inFromClient.readObject();
+					randomFault(FAULT_N, 2);
+					System.out.println("InputSyncPackage received: " + list.list);
+
+					outToClient.writeLong(list.list.get(list.list.size() - 1).no);
 					connectionSocket.close();
+
+					receiveBuffer.add(list);
 				}
 			} catch (Exception e) {
 				System.out.println("server >> " + e);
@@ -174,7 +193,22 @@ public class InputSyncPC {
 			}
 		}
 	}
-	
+
+	/* ui thread function */
+	public void run_ui() {
+		InputSyncPackageList list = null;
+		while (true) {
+			try {
+				if (list == null)
+					list = receiveBuffer.take();
+				packageReceived(list);
+				list = null;
+			} catch (Exception e) {
+				System.out.println("error: " + e.toString());
+			}
+		}
+	}
+
 	protected void randomFault(int n, int no) throws Exception {
 		if (n == 0)
 			return;
@@ -182,5 +216,5 @@ public class InputSyncPC {
 		if (random.nextInt(n) == 0)
 			throw new Exception("randomFault: " + no);
 	}
-	
+
 }

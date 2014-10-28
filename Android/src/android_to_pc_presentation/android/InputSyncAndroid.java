@@ -16,66 +16,94 @@
  */
 package android_to_pc_presentation.android;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.DataInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.concurrent.LinkedBlockingQueue;
 
-
 import android.util.Log;
-import android.widget.Toast;
 import android_to_pc_presentation.shared.InputHistory;
 import android_to_pc_presentation.shared.InputSyncPackage;
+import android_to_pc_presentation.shared.InputSyncPackageList;
 import android_to_pc_presentation.shared.Util;
 
 public class InputSyncAndroid implements Runnable {
 
 	protected LinkedBlockingQueue<InputSyncPackage> sendBuffer = new LinkedBlockingQueue<InputSyncPackage>();
-	
+
 	protected ObjectOutputStream outToServer;
-	protected BufferedReader inFromServer;
+	protected DataInputStream inFromServer;
 	protected Socket clientSocket;
-	
+
 	/** rastgele hata periyodu */
 	static final int RANDOM_FAULT_N = 0;
-	
+
 	protected void connect() throws Exception {
 		Log.i("tnr", "connecting to pc...");
 		clientSocket = new Socket(Config.PC_IP, Config.PC_PORT);
+		clientSocket.setSoTimeout(Config.SYNC_TIMEOUT);
 		outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
-		inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+		inFromServer = new DataInputStream(clientSocket.getInputStream());
 	}
-	
+
 	public void run() {
 		Log.i("tnr", "InputSyncAndroid.run()");
+
+		long lastSentObjectAck = -1;
+		InputSyncPackageList objectList = new InputSyncPackageList();
 		while (true) {
 			try {
-				while (true) {
-					Object o = sendBuffer.poll();
-					if (o == null) {
-						UtilAndroid.syncInfo(false);
-						o = sendBuffer.take();
-					}
-					Log.i("tnr", "sending object");
-					connect();
-					outToServer.writeObject(o);
-					Util.randomFault(RANDOM_FAULT_N, 1);
-					String serverResponse = inFromServer.readLine();
-					if (serverResponse.equals("ok")) {
-						UtilAndroid.setSyncError(false);
-					} else {
-						Log.i("tnr", "serverResponse: " + serverResponse);
-						UtilAndroid.errorMessage(serverResponse);
-					} 
+				InputSyncPackage o;
 
-					Util.randomFault(RANDOM_FAULT_N, 2);
-					clientSocket.close();
+				/* gonderilmis olanlari bul ve temizle */
+				int i = 0;
+				long l = -1;
+				for (InputSyncPackage p : objectList.list) {
+					assert l < p.no;
+					if (p.no > lastSentObjectAck)
+						break;
+					l = p.no;
+					i++;
 				}
+				objectList.list.subList(0, i).clear();
+				
+				/* en fazla 30 veriyi paketle */
+				while ((objectList.list.size() < 30) && (o = sendBuffer.poll()) != null)
+					objectList.list.add(o);
+				
+				/* hic veri yoksa blocking olarak veri al */
+				if (objectList.list.size() == 0) {
+					o = sendBuffer.take();
+					objectList.list.add(o);
+				}
+
+				/* gonder */
+				connect();
+				outToServer.writeObject(objectList);
+				Util.randomFault(RANDOM_FAULT_N, 1);
+				lastSentObjectAck = inFromServer.readLong();
+				Util.randomFault(RANDOM_FAULT_N, 2);
+				clientSocket.close();
+				Log.i("tnr", "sent: " + objectList.list.size());
+
+				/* listeyi temizle */
+				objectList.list.clear();
+
+				/* ekrandaki hata mesajini kaldir */
+				UtilAndroid.setSyncError(false);
+
+			} catch (java.net.ConnectException e) {
+				/* baglanti giderse yarim saniye bekle */
+				UtilAndroid.setSyncError(true);
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e1) {}
+			} catch (java.net.SocketTimeoutException e) {
+				UtilAndroid.setSyncError(true);
 			} catch (Exception e) {
 				UtilAndroid.setSyncError(true);
 				Log.i("tnr", "client >> " + e);
-				
+				e.printStackTrace();
 			} finally {
 				try {
 					clientSocket.close();
@@ -83,15 +111,28 @@ public class InputSyncAndroid implements Runnable {
 			}
 		}
 	}
-	
+
+	long lastSync = 0;
+	long lastActivity = 0;
+
 	public void sync(InputHistory inputHistory) {
+		long curr = System.currentTimeMillis();
+		if (curr - lastSync < Config.SYNC_MIN_TIME)
+			return;
+
 		for (Object event : inputHistory.events) {
+			if (event == null && curr - lastActivity > Config.SYNC_REFRESH_STOP_MS) {
+				continue;
+			}
+			if (event != null)
+				lastActivity = curr;
 			// Log.i("tnr", "sync");
 			// UtilAndroid.logHeap();
 			InputSyncPackage p = new InputSyncPackage(event);
 			sendBuffer.offer(p);
 		}
-		inputHistory.events.clear();	
+		inputHistory.events.clear();
+		lastSync = curr;
 	}
 
 }

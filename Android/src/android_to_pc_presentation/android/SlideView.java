@@ -108,7 +108,6 @@ public class SlideView extends View {
 		eraserPaint.setStrokeWidth(df.getStrokeWidthEraser());
 		
 		canvasPaint = new Paint(Paint.DITHER_FLAG);
-
 	}
 
 

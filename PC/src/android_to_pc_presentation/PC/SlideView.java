@@ -84,6 +84,14 @@ public class SlideView extends JPanel {
 				System.out.println("run error");
 			}
 		}).start();
+		
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				inputSyncPC.run_ui();
+				System.out.println("run error");
+			}
+		}).start();
 	}
 	
 	void setupDrawing() {

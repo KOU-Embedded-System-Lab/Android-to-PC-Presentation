@@ -21,20 +21,19 @@ import java.io.Serializable;
 public class InputSyncPackage implements Serializable {
 	private static final long serialVersionUID = 19001867160978848L;
 
+	private static int nextNo = 0;
+	
 	public InputHistory.ModeSelect modeSelect;
 	public InputHistory.TouchRecord touchRecord;
+	public long no;
 
 	public InputSyncPackage(Object object) {
+		no = nextNo++;
 		if (object == null)
 			return;
 		if (object.getClass() == InputHistory.ModeSelect.class)
 			this.modeSelect = (InputHistory.ModeSelect)object;
 		if (object.getClass() == InputHistory.TouchRecord.class)
-			this.touchRecord = (InputHistory.TouchRecord)object;
-	}
-	
-	public InputSyncPackage(InputHistory.ModeSelect modeSelect, InputHistory.TouchRecord touchRecord) {
-		this.modeSelect = modeSelect;
-		this.touchRecord = touchRecord;
+			this.touchRecord = (InputHistory.TouchRecord)object;	
 	}
 }

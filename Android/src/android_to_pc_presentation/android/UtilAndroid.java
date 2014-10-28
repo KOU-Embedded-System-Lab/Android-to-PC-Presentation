@@ -58,16 +58,12 @@ public class UtilAndroid {
 	private static boolean syncError;
 	
 	public static void setSyncError(boolean error) {
-		UtilAndroid.syncError = error;
-	}
-	
-	public static void syncInfo(final boolean running) {
 		final ProgressBar progressBar = (ProgressBar)activity.findViewById(R.id.progressBar_sync);
-
+		UtilAndroid.syncError = error;
 		activity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				if (syncError || running)
+				if (syncError)
 					progressBar.setVisibility(View.VISIBLE);
 				else
 					progressBar.setVisibility(View.GONE);
@@ -75,6 +71,7 @@ public class UtilAndroid {
 		});
 	}
 	
+
 	public static void errorMessage(final String s) {
 		if (context != null) {
 			Log.i("tnr", "errorMessage created: " + s);
