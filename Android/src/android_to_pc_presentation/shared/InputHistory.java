@@ -25,22 +25,22 @@ public class InputHistory {
 		events.add(null);
 	}
 	
-	public void setStrokeWidth(int value) {
-		events.add(new ModeSelect(ModeSelect.Type.STROKE_WIDTH.ordinal(), value));	
+	public void setPenStrokeWidth(int value) {
+		events.add(new ModeSelect(ModeSelect.Type.PEN_STROKE_WIDTH.ordinal(), value));	
 	}
 	
-	public void setPaintColor(String value) {
+	public void setPenColor(String value) {
 		events.add(new ModeSelect(ModeSelect.Type.PAINT_COLOR.ordinal(), (int)Long.parseLong(value.substring(1), 16)));
 	}
 
-	public void selectEraser() {
-		events.add(new ModeSelect(ModeSelect.Type.SELECT_ERASER.ordinal(), 0));
-	}
-	
-	public void selectPen() {
+	public void select_pen() {
 		events.add(new ModeSelect(ModeSelect.Type.SELECT_PEN.ordinal(), 0));
 	}
-	
+
+	public void select_eraser() {
+		events.add(new ModeSelect(ModeSelect.Type.SELECT_ERASER.ordinal(), 0));
+	}
+
 	public void changeSlide(int slideNo) {
 		events.add(new ModeSelect(ModeSelect.Type.CHANGE_SLIDE.ordinal(), slideNo));
 	}
@@ -86,14 +86,14 @@ public class InputHistory {
 
 		enum Type {
 			PAINT_COLOR,
-			STROKE_WIDTH,
+			PEN_STROKE_WIDTH,
 			SELECT_PEN,
 			SELECT_ERASER,
 			CHANGE_SLIDE,
 			LOAD_SLIDES,
 			DRAW_ENABLED
 		}
-
+		
 		protected int type;
 		protected int value;
 		
@@ -110,24 +110,24 @@ public class InputHistory {
 			return this.type == Type.PAINT_COLOR.ordinal();
 		}
 		
-		public boolean isStrokeWidth() {
-			return this.type == Type.STROKE_WIDTH.ordinal();
+		public boolean isPenStrokeWidth() {
+			return this.type == Type.PEN_STROKE_WIDTH.ordinal();
 		}
 		
-		public boolean isSelectPen() {
-			return this.type == Type.SELECT_PEN.ordinal();
-		}
-		
-		public boolean isSelectEraser() {
-			return this.type == Type.SELECT_ERASER.ordinal();
-		}
-
 		public boolean isChangeSlide() {
 			return this.type == Type.CHANGE_SLIDE.ordinal();
 		}
 		
 		public boolean isLoadSlides() {
 			return this.type == Type.LOAD_SLIDES.ordinal();
+		}
+		
+		public boolean isSelectEraser() {
+			return this.type == Type.SELECT_ERASER.ordinal();
+		}
+		
+		public boolean isSelectPen() {
+			return this.type == Type.SELECT_PEN.ordinal();
 		}
 		
 	}

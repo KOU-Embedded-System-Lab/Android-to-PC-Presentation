@@ -16,35 +16,39 @@
  */
 package android_to_pc_presentation.shared;
 
-public class DrawingFunctons {
-	
-	public CustomPaint paintPen, paintEraser;	
+public class CustomPaint {
 
-	boolean eraserMode = false;
+	// ortak
+	private String color;
+	protected int strokeWidth;
 	
-	int selectedNo = 0;
-
-	public DrawingFunctons(CustomPaint paintPen, CustomPaint paintEraser) {
-		this.paintPen = paintPen;
-		this.paintEraser = paintEraser;
+	public CustomPaint(String color, int strokeWidth) {
+		this.setColor(color);
+		this.strokeWidth = strokeWidth;
 	}
 	
-	public void select_pen(int no) {
-		eraserMode = false;
-		selectedNo = no;
+	public int getStrokeWidth() {
+		return strokeWidth;
 	}
 	
-	public void select_eraser(int no) {
-		eraserMode = true;
-		selectedNo = no;
+	public void setStrokeWidth(int w) {
+		strokeWidth = w;
 	}
 	
-	public boolean is_eraserMode() {
-		return eraserMode;
+	public void setColor(String color) {
+		assert (color.length() == 9) && (color.charAt(0) == '#');
+		this.color = color;
 	}
 	
-	public CustomPaint getCurrentPaint() {
-		return (eraserMode) ? paintEraser : paintPen; 
+	public int getColor_argb_int() {
+		return (int) (Long.parseLong(this.color.substring(1), 16) & 0xffffffff);
 	}
-
+	
+	public String getColor_argb_html() {
+		return this.color;
+	}
+	
+	public String getColor_rgb_hex() {
+		return "0x"+this.color.substring(3);
+	}	
 }

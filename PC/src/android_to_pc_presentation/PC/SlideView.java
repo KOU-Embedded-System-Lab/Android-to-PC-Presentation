@@ -30,6 +30,7 @@ import java.util.TimerTask;
 
 import javax.swing.JPanel;
 
+import android_to_pc_presentation.shared.CustomPaint;
 import android_to_pc_presentation.shared.DrawingFunctons;
 import android_to_pc_presentation.shared.InputHistory;
 
@@ -37,7 +38,7 @@ public class SlideView extends JPanel {
 	
 	private static final long serialVersionUID = 5458568983898307239L;
 	
-	public DrawingFunctons df = new DrawingFunctons();
+	public DrawingFunctons df;
 	public InputHistory inputHistory = new InputHistory();
 	public InputSyncPC inputSyncPC;
 	
@@ -50,9 +51,6 @@ public class SlideView extends JPanel {
 	
 	GeneralPath drawPathScaled= new GeneralPath(GeneralPath.WIND_NON_ZERO, 1);
 	GeneralPath drawPathOrig = new GeneralPath(GeneralPath.WIND_NON_ZERO, 1);
-	
-	private CustomPaint drawPaint;
-	private CustomPaint eraserPaint;
 	
 	float prevTouchX, prevTouchY;
 	
@@ -95,17 +93,11 @@ public class SlideView extends JPanel {
 	}
 	
 	void setupDrawing() {
-		drawPaint = new CustomPaint(4f, BasicStroke.CAP_ROUND, BasicStroke.CAP_ROUND,
-					Color.decode("0x"+df.getPaintColor_rgb_hex()),
-					new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON),
-					AlphaComposite.Src
-					);
 		
-		eraserPaint = new CustomPaint(80f, BasicStroke.CAP_ROUND, BasicStroke.CAP_ROUND,
-					Color.BLACK,
-					new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON),
-					AlphaComposite.Clear
-					);
+		df = new DrawingFunctons(
+				new CustomPaint("#ff000000", 4),
+				new CustomPaint("#00000000", 80)
+				);
 	}
 
 	void doRedraw() {
@@ -159,15 +151,8 @@ public class SlideView extends JPanel {
 		g2.drawImage(_drawImageScaled, null, 0, 0);
 		
 		/* son cizimi ekrana ciz */
-		if (df.isEraserMode())
-			eraserPaint.getScled(1.0f/getXRatio()).setPaintTo(g2);
-		else {
-			drawPaint.setColor(Color.decode("0x"+df.getPaintColor_rgb_hex()));
-			drawPaint.setStrokeWidth(df.getStrokeWidth());
-			drawPaint.getScled(1.0f/getXRatio()).setPaintTo(g2);
-		}
+		this.setPaintTo(g2, 1.0f/getXRatio());
 		g2.draw(drawPathScaled);
-	
 	}
 	
 	public void doChangeSlide(int no) throws Exception {
@@ -246,15 +231,9 @@ public class SlideView extends JPanel {
 			drawPathOrig.lineTo(prevTouchX, prevTouchY);		
 		    break;
 		case 1:
-			if (df.isEraserMode()) {
-				eraserPaint.getScled(1.0f/getXRatio()).setPaintTo(scaled);
-				eraserPaint.setPaintTo(orig);
-			} else {
-				drawPaint.setColor(Color.decode("0x"+df.getPaintColor_rgb_hex()));
-				drawPaint.setStrokeWidth(df.getStrokeWidth());
-				drawPaint.getScled(1.0f/getXRatio()).setPaintTo(drawImageScaled);
-				drawPaint.setPaintTo(orig);
-			}
+		
+			this.setPaintTo(drawImageScaled, 1.0f/getXRatio());
+			this.setPaintTo(orig, 1);
 
 			orig.draw(drawPathOrig);
 			scaled.draw(drawPathScaled);	
@@ -271,14 +250,14 @@ public class SlideView extends JPanel {
 		doRedraw();
 	}
 
-	public void doSelectEraser() {
+	public void doSelectEraser(int no) {
 		System.out.println("doSelectEraser");
-		df.selectEraser();
+		df.select_eraser(no);
 	}
 	
-	public void doSelectPen() {
+	public void doSelectPen(int no) {
 		System.out.println("doSelectPen");
-		df.selectPen();
+		df.select_pen(no);
 	}
 	
 	public void calculateBounds() {
@@ -307,10 +286,17 @@ public class SlideView extends JPanel {
 		doChangeSlide(0);
 	}
 	
-	// TODO: bu fonksiyon kaldirilip, baska yerde islem yapilacak
-	public void setStrokeWidth(float w) {
-		System.out.println("setStrokeWidth " + w);
-		df.setStrokeWidth(w);
+	public void setPaintTo(Graphics2D g2d, float scale) {
+		
+		g2d.setColor(Color.decode(df.getCurrentPaint().getColor_rgb_hex()));
+		g2d.setStroke(new BasicStroke(df.getCurrentPaint().getStrokeWidth(), BasicStroke.CAP_ROUND, BasicStroke.CAP_ROUND));
+		g2d.setRenderingHints(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
+		
+		if ((df.getCurrentPaint().getColor_argb_int()&0xff000000) == 0)
+			g2d.setComposite(AlphaComposite.Clear);
+		else
+			g2d.setComposite(AlphaComposite.Src);
+		
 	}
 	
 }

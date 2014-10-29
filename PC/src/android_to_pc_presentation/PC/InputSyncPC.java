@@ -49,21 +49,19 @@ public class InputSyncPC {
 			if (rec.isChangeSlide()) {
 				slideView.doChangeSlide(rec.getValue());
 			} else if (rec.isPaintColor()) {
-				String strColor = Integer
-						.toHexString(rec.getValue() & 0xffffff);
+				String strColor = Integer.toHexString(rec.getValue() & 0xffffff);
 				while (strColor.length() < 6)
-					strColor = "0" + strColor; // 6 karakterden kucukse basina
-												// ekle
-				slideView.df.setPaintColor("#00" + strColor);
+					strColor = "0" + strColor; // 6 karakterden kucukse basina ekle
+				slideView.df.paintPen.setColor("#ff" + strColor);
 			} else if (rec.isSelectPen()) {
-				slideView.doSelectPen();
+				slideView.doSelectPen(rec.getValue());
 			} else if (rec.isSelectEraser()) {
-				slideView.doSelectEraser();
+				slideView.doSelectEraser(rec.getValue());
 			} else if (rec.isLoadSlides()) {
 				slideView.doChangeSlide(0); // acik slaytin kaydedilmesi icni
 				slideView.loadSlides(ConfigPC.PATH + "/", rec.getValue());
-			} else if (rec.isStrokeWidth()) {
-				slideView.setStrokeWidth(rec.getValue());
+			} else if (rec.isPenStrokeWidth()) {
+				slideView.df.paintPen.setStrokeWidth(rec.getValue());
 			} else {
 				System.out.println("unknown modeselect");
 			}
