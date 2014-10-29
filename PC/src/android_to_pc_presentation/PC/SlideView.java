@@ -289,7 +289,7 @@ public class SlideView extends JPanel {
 	public void setPaintTo(Graphics2D g2d, float scale) {
 		
 		g2d.setColor(Color.decode(df.getCurrentPaint().getColor_rgb_hex()));
-		g2d.setStroke(new BasicStroke(df.getCurrentPaint().getStrokeWidth(), BasicStroke.CAP_ROUND, BasicStroke.CAP_ROUND));
+		g2d.setStroke(new BasicStroke(df.getCurrentPaint().getStrokeWidth()*scale, BasicStroke.CAP_ROUND, BasicStroke.CAP_ROUND));
 		g2d.setRenderingHints(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
 		
 		if ((df.getCurrentPaint().getColor_argb_int()&0xff000000) == 0)
