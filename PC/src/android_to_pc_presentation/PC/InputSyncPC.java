@@ -62,6 +62,10 @@ public class InputSyncPC {
 				slideView.loadSlides(ConfigPC.PATH + "/", rec.getValue());
 			} else if (rec.isPenStrokeWidth()) {
 				slideView.df.paintPen.setStrokeWidth(rec.getValue());
+			} else if (rec.isSelectDrawMode()) {
+				slideView.df.select_drawMode();
+			} else if (rec.isSelectLineMode()) {
+				slideView.df.select_lineMode();
 			} else {
 				System.out.println("unknown modeselect");
 			}

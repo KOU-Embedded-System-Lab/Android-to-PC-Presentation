@@ -41,7 +41,7 @@ import android.widget.ToggleButton;
 public class MainActivity extends Activity {
 
 	/** renk secimi buttonu */
-	private ImageButton currPaint;
+	private ImageButton currPaint, currDrawMode;
 	
 	private SlideView slideView;
 	
@@ -68,16 +68,8 @@ public class MainActivity extends Activity {
 		currPaint = (ImageButton)paintLayout.getChildAt(0);
 		currPaint.setImageDrawable(getResources().getDrawable(R.drawable.paint_pressed));
 		
-		ToggleButton toggleButton = (ToggleButton)findViewById(R.id.toggleButton_eraser);
-		toggleButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (isChecked)
-					slideView.setSelectEraser();
-				else
-					slideView.setSelectPen();
-			}
-		});
+		currDrawMode = (ImageButton)findViewById(R.id.button_drawModeDraw);
+		currDrawMode.setImageDrawable(getResources().getDrawable(R.drawable.other_pressed));
 		
 		new Thread(slideView.inputSyncAndroid).start();
 	}
@@ -174,41 +166,45 @@ public class MainActivity extends Activity {
 		slideView.prevSlide();
 	}
 	
-	public void button_redrawClicked(View view) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle("RECORDS file name");
-		// Set up the input
-		final EditText input = new EditText(this);
-		input.setText(Config.getRecordsFileName());
-		// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-		input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-		builder.setView(input);
-		// Set up the buttons
-		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { 
-		    @Override
-		    public void onClick(DialogInterface dialog, int which) {
-		        Config.setRecordsFileName(input.getText().toString());
-		        slideView.redrawCurrSlide();
-		    }
-		});
-		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-		    @Override
-		    public void onClick(DialogInterface dialog, int which) {
-		        dialog.cancel();
-		    }
-		});
-
-		builder.show();
-	}
-	
 	public void paintClicked(View view) {
 		if (view != currPaint) {
 			ImageButton imgView = (ImageButton) view;
 			String color = view.getTag().toString();
-			slideView.setPaintColor(color);
-			imgView.setImageDrawable(getResources().getDrawable(R.drawable.paint_pressed));
-			currPaint.setImageDrawable(getResources().getDrawable(R.drawable.paint));
+			
+			if (color.startsWith("eraser_")) {
+				imgView.setImageDrawable(getResources().getDrawable(R.drawable.other_pressed));
+				int no = Integer.parseInt(color.substring("eraser_".length()));
+				Log.i("tnr", "eraserNo: " + no);
+				slideView.setSelectEraser(no);
+			} else {
+				imgView.setImageDrawable(getResources().getDrawable(R.drawable.paint_pressed));
+				slideView.setPaintColor(color);
+			}
+
+			if (currPaint == findViewById(R.id.button_eraser_0) || currPaint == findViewById(R.id.button_eraser_1))
+				currPaint.setImageDrawable(getResources().getDrawable(R.drawable.other_not_pressed));
+			else
+				currPaint.setImageDrawable(getResources().getDrawable(R.drawable.paint));
+			
 			currPaint = (ImageButton) view;
+		}
+	}
+	
+	
+	public void drawModeClicked(View view) {
+		if (view != currDrawMode) {
+			ImageButton imgView = (ImageButton)view;
+			String name = view.getTag().toString();
+			
+			currDrawMode.setImageDrawable(getResources().getDrawable(R.drawable.other_not_pressed));
+			imgView.setImageDrawable(getResources().getDrawable(R.drawable.other_pressed));
+			
+			if (name.equals("draw"))
+				slideView.setSelect_drawMode();
+			else if (name.equals("line"))
+				slideView.setSelect_lineMode();
+		
+			currDrawMode = (ImageButton) view;
 		}
 	}
 	

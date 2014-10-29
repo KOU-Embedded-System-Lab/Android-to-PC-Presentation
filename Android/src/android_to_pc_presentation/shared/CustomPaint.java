@@ -50,5 +50,5 @@ public class CustomPaint {
 	
 	public String getColor_rgb_hex() {
 		return "0x"+this.color.substring(3);
-	}	
+	}
 }

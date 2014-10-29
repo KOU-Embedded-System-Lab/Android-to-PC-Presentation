@@ -18,15 +18,23 @@ package android_to_pc_presentation.shared;
 
 public class DrawingFunctons {
 	
-	public CustomPaint paintPen, paintEraser;	
+	public CustomPaint paintPen;
+	public CustomPaint paintEraser;
+	public CustomPaint paintEraser_small;
 
 	boolean eraserMode = false;
+	boolean lineMode = false;
 	
 	int selectedNo = 0;
+	
+	public int getSelectedNo() {
+		return selectedNo;
+	}
 
 	public DrawingFunctons(CustomPaint paintPen, CustomPaint paintEraser) {
 		this.paintPen = paintPen;
 		this.paintEraser = paintEraser;
+		this.paintEraser_small = new CustomPaint(paintEraser.getColor_argb_html(), paintPen.getStrokeWidth()*SharedConfig.DEFAULT_ERASER_0_PEN_RATIO);
 	}
 	
 	public void select_pen(int no) {
@@ -38,13 +46,30 @@ public class DrawingFunctons {
 		eraserMode = true;
 		selectedNo = no;
 	}
-	
+
 	public boolean is_eraserMode() {
 		return eraserMode;
 	}
 	
-	public CustomPaint getCurrentPaint() {
-		return (eraserMode) ? paintEraser : paintPen; 
+	public void select_drawMode() {
+		lineMode = false;
 	}
-
+	
+	public void select_lineMode() {
+		lineMode = true;
+	}
+	
+	public boolean is_lineMode() {
+		return lineMode;
+	}
+	
+	
+	public CustomPaint getCurrentPaint() {
+		if (eraserMode) {
+			if (selectedNo == 0)
+				return paintEraser_small;
+			return paintEraser; 
+		}
+		return paintPen;
+	}
 }

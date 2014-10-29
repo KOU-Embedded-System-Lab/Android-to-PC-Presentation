@@ -39,6 +39,7 @@ import android.widget.Toast;
 import android_to_pc_presentation.shared.CustomPaint;
 import android_to_pc_presentation.shared.DrawingFunctons;
 import android_to_pc_presentation.shared.InputHistory;
+import android_to_pc_presentation.shared.SharedConfig;
 
 public class SlideView extends View {
 	
@@ -58,6 +59,9 @@ public class SlideView extends View {
 	/** TODO: aciklama */
 	private final Paint canvasPaint = new Paint(Paint.DITHER_FLAG);
 
+	/** down sirasindaki x, y */
+	private float firstTouchX = 0, firstTouchY = 0;
+	
 	/** bir onceki dokunulan x, y */
 	private float prevTouchX = 0, prevTouchY = 0;
 
@@ -87,10 +91,7 @@ public class SlideView extends View {
 		drawPathScaled = new Path();
 		drawPathOrig = new Path();
 
-		df = new DrawingFunctons(
-				new CustomPaint("#ff000000", 4),
-				new CustomPaint("#00000000", 80)
-			);
+		df = new DrawingFunctons(new CustomPaint("#ff000000", SharedConfig.DEFAULT_PEN_SIZE), new CustomPaint("#00000000", SharedConfig.DEFAULT_ERASER_1_SIZE));
 	}
 
 
@@ -141,15 +142,18 @@ public class SlideView extends View {
 		canvas.drawBitmap(slideImageScaled, 0, 0, canvasPaint);
 		canvas.drawBitmap(drawImageScaled, 0, 0, canvasPaint);
 		
-		canvas.drawPath(drawPathScaled, this.getPaint(getXRatio())); 
+		if (df.is_lineMode())
+			canvas.drawLine(firstTouchX*getXScale(), firstTouchY*getYScale(), prevTouchX*getXScale(), prevTouchY*getYScale(), this.getPaint(getXScale()));
+		else
+			canvas.drawPath(drawPathScaled, this.getPaint(getXScale()));
 	}
 	
-	public float getXRatio() {
-		return getCurrSlide().getWidth() / (float)getWidth();
+	public float getXScale() {
+		return (float)getWidth() / getCurrSlide().getWidth();
 	}
 	
-	public float getYRatio() {
-		return getCurrSlide().getHeight() / (float)getHeight();
+	public float getYScale() {
+		return (float)getHeight() / getCurrSlide().getHeight();
 	}
 
 	void doTouchEvent(int action, float X, float Y) {
@@ -167,19 +171,26 @@ public class SlideView extends View {
 
 		switch (action) {
 		case MotionEvent.ACTION_DOWN:
-			drawPathScaled.moveTo(X/getXRatio(), Y/getYRatio());
+			firstTouchX = X;
+			firstTouchY = Y;
+			drawPathScaled.moveTo(X*getXScale(), Y*getYScale());
 			drawPathOrig.moveTo(X, Y);
 			break;
 		case MotionEvent.ACTION_MOVE:
 			// Log.i("tnr", "ACTION_MOVE");
-			drawPathScaled.lineTo(prevTouchX/getXRatio(), prevTouchY/getYRatio());
+			drawPathScaled.lineTo(prevTouchX*getXScale(), prevTouchY*getYScale());
 			drawPathOrig.lineTo(prevTouchX, prevTouchY);		
 		    break;
 		case MotionEvent.ACTION_UP:
 			// Log.i("tnr", "ACTION_UP");
-
-			scaled.drawPath(drawPathScaled, this.getPaint(getXRatio())); 
-			orig.drawPath(drawPathOrig, this.getPaint(1)); 
+			
+			if (df.is_lineMode()) {
+				scaled.drawLine(firstTouchX*getXScale(), firstTouchY*getYScale(), X*getXScale(), Y*getYScale(), this.getPaint(getXScale()));
+				orig.drawLine(firstTouchX, firstTouchY, X, Y, this.getPaint(1));
+			} else {
+				scaled.drawPath(drawPathScaled, this.getPaint(getXScale())); 
+				orig.drawPath(drawPathOrig, this.getPaint(1));
+			}
 
 			drawPathScaled.reset();
 			drawPathOrig.reset();
@@ -235,21 +246,39 @@ public class SlideView extends View {
 		_doChangeSlide_stageDownload(no);
 	}
 	
+	// FIXME: bu fonksiyonlar baska yere tasinabilir
 	public void setPaintColor(String newColor) {
 		synchronized (inputHistory) {
+			inputHistory.select_pen();
 			inputHistory.setPenColor(newColor);
 			inputSyncAndroid.sync(inputHistory);
 		}
+		df.select_pen(0);
 		df.paintPen.setColor(newColor);
 	}
 
-	public void setSelectEraser() {
+	public void setSelectEraser(int no) {
 		synchronized (inputHistory) {
-			inputHistory.select_eraser();
+			inputHistory.select_eraser(no);
 			inputSyncAndroid.sync(inputHistory);
 		}
-		// FIXME: no
-		df.select_eraser(0);
+		df.select_eraser(no);
+	}
+	
+	public void setSelect_lineMode() {
+		synchronized (inputHistory) {
+			inputHistory.select_lineMode();
+			inputSyncAndroid.sync(inputHistory);
+		}
+		df.select_lineMode();
+	}
+	
+	public void setSelect_drawMode() {
+		synchronized (inputHistory) {
+			inputHistory.select_drawMode();
+			inputSyncAndroid.sync(inputHistory);
+		}
+		df.select_drawMode();
 	}
 	
 	public void setSelectPen() {
@@ -257,7 +286,6 @@ public class SlideView extends View {
 			inputHistory.select_pen();
 			inputSyncAndroid.sync(inputHistory);
 		}
-		// FIXME: no
 		df.select_pen(0);
 	}
 	
@@ -300,7 +328,7 @@ public class SlideView extends View {
 			// aktif ayarlari karsiya gondermek icin ekle
 			inputHistory.setPenColor(df.paintPen.getColor_argb_html());
 			if (df.is_eraserMode())
-				inputHistory.select_eraser();
+				inputHistory.select_eraser(df.getSelectedNo());
 			else
 				inputHistory.select_pen();
 			inputHistory.setPenStrokeWidth(df.paintPen.getStrokeWidth());

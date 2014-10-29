@@ -33,6 +33,7 @@ import javax.swing.JPanel;
 import android_to_pc_presentation.shared.CustomPaint;
 import android_to_pc_presentation.shared.DrawingFunctons;
 import android_to_pc_presentation.shared.InputHistory;
+import android_to_pc_presentation.shared.SharedConfig;
 
 public class SlideView extends JPanel {
 	
@@ -52,6 +53,10 @@ public class SlideView extends JPanel {
 	GeneralPath drawPathScaled= new GeneralPath(GeneralPath.WIND_NON_ZERO, 1);
 	GeneralPath drawPathOrig = new GeneralPath(GeneralPath.WIND_NON_ZERO, 1);
 	
+	/** down sirasindaki x, y */
+	private float firstTouchX = 0, firstTouchY = 0;
+	
+	/** */
 	float prevTouchX, prevTouchY;
 	
 	/** slayt listesi */
@@ -93,11 +98,8 @@ public class SlideView extends JPanel {
 	}
 	
 	void setupDrawing() {
-		
-		df = new DrawingFunctons(
-				new CustomPaint("#ff000000", 4),
-				new CustomPaint("#00000000", 80)
-				);
+		df = new DrawingFunctons(new CustomPaint("#ff000000", SharedConfig.DEFAULT_PEN_SIZE), 
+				new CustomPaint("#00000000", SharedConfig.DEFAULT_ERASER_1_SIZE));
 	}
 
 	void doRedraw() {
@@ -151,8 +153,11 @@ public class SlideView extends JPanel {
 		g2.drawImage(_drawImageScaled, null, 0, 0);
 		
 		/* son cizimi ekrana ciz */
-		this.setPaintTo(g2, 1.0f/getXRatio());
-		g2.draw(drawPathScaled);
+		this.setPaintTo(g2, getXScale());
+		if (df.is_lineMode())
+			g2.drawLine((int)(firstTouchX*getXScale()), (int)(firstTouchY*getYScale()), (int)(prevTouchX*getXScale()), (int)(prevTouchY*getYScale()));
+		else
+			g2.draw(drawPathScaled);
 	}
 	
 	public void doChangeSlide(int no) throws Exception {
@@ -186,16 +191,16 @@ public class SlideView extends JPanel {
 	}
 
 	
-	public float getXRatio() {
+	public float getXScale() {
 		if (slides.size() == 0)
 			return 0;
-		return getCurrSlide().getWidth() / (float)getWidth();
+		return (float)getWidth() / getCurrSlide().getWidth();
 	}
 	
-	public float getYRatio() {
+	public float getYScale() {
 		if (slides.size() == 0)
 			return 0;
-		return getCurrSlide().getHeight() / (float)getHeight();
+		return (float)getHeight() / getCurrSlide().getHeight();
 	}
 	
 	private Slide getCurrSlide() {
@@ -222,21 +227,29 @@ public class SlideView extends JPanel {
 		// FIXME: convert hardcoded case values to enum
 		switch (action) {
 		case 0:
-			drawPathScaled.moveTo(X/getXRatio(), Y/getYRatio());
+			firstTouchX = X;
+			firstTouchY = Y;
+			drawPathScaled.moveTo(X*getXScale(), Y*getYScale());
 			drawPathOrig.moveTo(X, Y);
 			break;
 		case 2:
 			// Log.i("tnr", "ACTION_MOVE");
-			drawPathScaled.lineTo(prevTouchX/getXRatio(), prevTouchY/getYRatio());
+			drawPathScaled.lineTo(prevTouchX*getXScale(), prevTouchY*getYScale());
 			drawPathOrig.lineTo(prevTouchX, prevTouchY);		
 		    break;
 		case 1:
 		
-			this.setPaintTo(drawImageScaled, 1.0f/getXRatio());
+			this.setPaintTo(drawImageScaled, getXScale());
 			this.setPaintTo(orig, 1);
 
-			orig.draw(drawPathOrig);
-			scaled.draw(drawPathScaled);	
+			if (df.is_lineMode()) {
+				orig.drawLine((int)firstTouchX, (int)firstTouchY, (int)X, (int)Y);
+				scaled.drawLine((int)(firstTouchX*getXScale()), (int)(firstTouchY*getYScale()), (int)(X*getXScale()), (int)(Y*getYScale()));
+			} else {
+				orig.draw(drawPathOrig);
+				scaled.draw(drawPathScaled);	
+			}
+			
 			drawPathScaled.reset();
 			drawPathOrig.reset();
 			

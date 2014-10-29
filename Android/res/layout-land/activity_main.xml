@@ -28,26 +28,6 @@
 		    android:onClick="button_loadClicked"
 		    android:text="L" />
 
-		<Button
-		    android:id="@+id/button_redraw"
-		    style="?android:attr/buttonStyleSmall"
-		    android:layout_width="40dp"
-		    android:layout_height="40dp"
-		    android:onClick="button_redrawClicked"
-		    android:text="R" />
-
-        <ImageButton
-            android:id="@+id/new_btn"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/new_pic" />
-
-        <ImageButton
-            android:id="@+id/save_btn"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/save" />
-
         <FrameLayout
             android:layout_width="40dp"
             android:layout_height="40dp" >
@@ -57,7 +37,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:indeterminateBehavior="repeat" />
+
         </FrameLayout>
+
+        <Button
+            android:id="@+id/button_prevSlide"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:onClick="button_prevSlideClicked"
+            android:text=" &lt; " />
+
+        <Button
+            android:id="@+id/button_nextSlide"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:onClick="button_nextSlideClicked"
+            android:text=" > " />
 
     </LinearLayout>
 
@@ -219,27 +216,49 @@
 
 		</LinearLayout>
 
-		<ToggleButton
-		    android:id="@+id/toggleButton_eraser"
-		    android:layout_width="30dp"
-		    android:layout_height="30dp"
-		    android:background="@drawable/eraser" />
+		<LinearLayout
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:orientation="horizontal" >
 
-		<Button
-		    android:id="@+id/button_prevSlide"
-		    style="?android:attr/buttonStyleSmall"
-		    android:layout_width="fill_parent"
-		    android:layout_height="40dp"
-		    android:onClick="button_prevSlideClicked"
-		    android:text=" &lt; " />
+		    <ImageButton
+		        android:id="@+id/button_eraser_0"
+		        android:layout_width="30dp"
+		        android:layout_height="30dp"
+		        android:background="@drawable/eraser_small"
+		        android:onClick="paintClicked"
+		        android:tag="eraser_0" />
 
-		<Button
-		    android:id="@+id/button_nextSlide"
-		    style="?android:attr/buttonStyleSmall"
-		    android:layout_width="fill_parent"
-		    android:layout_height="40dp"
-		    android:onClick="button_nextSlideClicked"
-		    android:text=" > " />
+		    <ImageButton
+		        android:id="@+id/button_eraser_1"
+		        android:layout_width="30dp"
+		        android:layout_height="30dp"
+		        android:background="@drawable/eraser"
+		        android:onClick="paintClicked"
+		        android:tag="eraser_1" />
+		</LinearLayout>
+
+		<LinearLayout
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:orientation="horizontal" >
+
+		    <ImageButton
+		        android:id="@+id/button_drawModeDraw"
+		        android:layout_width="30dp"
+		        android:layout_height="30dp"
+		        android:background="@drawable/draw_mode_draw"
+		        android:onClick="drawModeClicked"
+		        android:tag="draw" />
+
+		    <ImageButton
+		        android:id="@+id/button_drawModeLine"
+		        android:layout_width="30dp"
+		        android:layout_height="30dp"
+		        android:background="@drawable/draw_mode_line"
+		        android:onClick="drawModeClicked"
+		        android:tag="line" />
+		</LinearLayout>
 
 	</LinearLayout>
 

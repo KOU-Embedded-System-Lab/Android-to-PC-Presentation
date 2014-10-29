@@ -37,8 +37,16 @@ public class InputHistory {
 		events.add(new ModeSelect(ModeSelect.Type.SELECT_PEN.ordinal(), 0));
 	}
 
-	public void select_eraser() {
-		events.add(new ModeSelect(ModeSelect.Type.SELECT_ERASER.ordinal(), 0));
+	public void select_eraser(int no) {
+		events.add(new ModeSelect(ModeSelect.Type.SELECT_ERASER.ordinal(), no));
+	}
+	
+	public void select_drawMode() {
+		events.add(new ModeSelect(ModeSelect.Type.SELECT_DRAW_MODE.ordinal(), 0));
+	}
+	
+	public void select_lineMode() {
+		events.add(new ModeSelect(ModeSelect.Type.SELECT_LINE_MODE.ordinal(), 0));
 	}
 
 	public void changeSlide(int slideNo) {
@@ -91,7 +99,8 @@ public class InputHistory {
 			SELECT_ERASER,
 			CHANGE_SLIDE,
 			LOAD_SLIDES,
-			DRAW_ENABLED
+			SELECT_DRAW_MODE,
+			SELECT_LINE_MODE
 		}
 		
 		protected int type;
@@ -130,6 +139,13 @@ public class InputHistory {
 			return this.type == Type.SELECT_PEN.ordinal();
 		}
 		
+		public boolean isSelectLineMode() {
+			return this.type == Type.SELECT_LINE_MODE.ordinal();
+		}
+		
+		public boolean isSelectDrawMode() {
+			return this.type == Type.SELECT_DRAW_MODE.ordinal();
+		}
 	}
 	
 }
