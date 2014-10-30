@@ -101,6 +101,10 @@ public class SlideView extends View {
 		if (slides.size() == 0)
 			return false;
 
+		/* parmak ile cizimleri gormezden gel */
+		if (event.getToolType(0) == MotionEvent.TOOL_TYPE_FINGER)
+			return false;
+		
 		/* orana gore x, y hesapla */
 		float xRatio = getCurrSlide().getWidth() / (float)getWidth();
 		float yRatio = getCurrSlide().getHeight() / (float)getHeight();
@@ -168,9 +172,10 @@ public class SlideView extends View {
 			return;
 		}
 		Canvas scaled = new Canvas(drawImageScaled);
-
+		
 		switch (action) {
 		case MotionEvent.ACTION_DOWN:
+			//Log.i("tnr", "ACTION_POINTER_DOWN");
 			firstTouchX = X;
 			firstTouchY = Y;
 			drawPathScaled.moveTo(X*getXScale(), Y*getYScale());
@@ -182,7 +187,7 @@ public class SlideView extends View {
 			drawPathOrig.lineTo(prevTouchX, prevTouchY);		
 		    break;
 		case MotionEvent.ACTION_UP:
-			// Log.i("tnr", "ACTION_UP");
+			//Log.i("tnr", "ACTION_UP");
 			
 			if (df.is_lineMode()) {
 				scaled.drawLine(firstTouchX*getXScale(), firstTouchY*getYScale(), X*getXScale(), Y*getYScale(), this.getPaint(getXScale()));
