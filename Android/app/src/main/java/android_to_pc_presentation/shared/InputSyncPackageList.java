@@ -11,7 +11,7 @@ public class InputSyncPackageList implements Serializable {
 	public ArrayList<InputSyncPackage> list;
 		
 	public InputSyncPackageList() {
-		this.list = new ArrayList<>();
+		this.list = new ArrayList();
 	}
 	
 }
