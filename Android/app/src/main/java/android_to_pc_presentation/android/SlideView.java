@@ -68,6 +68,9 @@ public class SlideView extends View {
 	/** slayt listesi */
 	private ArrayList<Slide> slides = new ArrayList<Slide>();
 	private int _currSlideNo = 0;
+
+	/** slaytin degistirilip degistirilmedigi kontrolu*/
+	protected boolean slideChanged = false;
 	
 	public SlideView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -100,6 +103,9 @@ public class SlideView extends View {
 
 		if (slides.size() == 0)
 			return false;
+
+		if(slideChanged)
+			sendChangedSlide();
 
 		/* parmak ile cizimleri gormezden gel */
 		if (event.getToolType(0) == MotionEvent.TOOL_TYPE_FINGER)
@@ -297,12 +303,22 @@ public class SlideView extends View {
 	public void changeSlide(int no) {
 		if (no < 0 || no >= slides.size())
 			return;
-		synchronized (inputHistory) {
-			inputHistory.changeSlide(no);
-			inputSyncAndroid.sync(inputHistory);
-		}
+
+		slideChanged = true;
+
 		doChangeSlide(no);
 		UtilAndroid.logHeap();
+	}
+
+	// karar butonuna basildiginda hangi slide da olundugunu karsiya gonder
+	public void sendChangedSlide() {
+		if(slideChanged) {
+			slideChanged = false;
+			synchronized (inputHistory) {
+				inputHistory.changeSlide(_currSlideNo);
+				inputSyncAndroid.sync(inputHistory);
+			}
+		}
 	}
 	
 	public void nextSlide() {
