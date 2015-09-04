@@ -56,6 +56,14 @@
             android:onClick="button_nextSlideClicked"
             android:text=" > " />
 
+		<Button
+			android:id="@+id/button_sendSlide"
+			style="?android:attr/buttonStyleSmall"
+			android:layout_width="40dp"
+			android:layout_height="40dp"
+			android:onClick="button_sendSlideClicked"
+			android:text="S" />
+
     </LinearLayout>
 
 	<RelativeLayout
