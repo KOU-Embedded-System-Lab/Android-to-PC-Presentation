@@ -43,6 +43,8 @@ public class SlideView extends JPanel {
 	public InputHistory inputHistory = new InputHistory();
 	public InputSyncPC inputSyncPC;
 	
+	protected boolean doTouchEvent = false; // eger touch event gelmezse resmi kaydetme
+	
 	/** sunum katmani */
 	BufferedImage _slideImageScaled = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
 	Graphics2D slideImageScaled = _slideImageScaled.createGraphics();
@@ -161,12 +163,17 @@ public class SlideView extends JPanel {
 	}
 	
 	public void doChangeSlide(int no) throws Exception {
+		
 		System.out.println("doChangeSlide() " + no + " / " + slides.size());
 		if (no < 0 || no >= slides.size())
 			return;
 		
-		slides.get(_currSlideNo).saveDrawImage();
-		slides.get(_currSlideNo).closeDrawImage();
+		if(doTouchEvent) {
+			doTouchEvent = false;
+			
+			slides.get(_currSlideNo).saveDrawImage();
+			slides.get(_currSlideNo).closeDrawImage();
+		}
 		
 		_currSlideNo = no;
 		Slide slide = slides.get(no);
@@ -190,7 +197,6 @@ public class SlideView extends JPanel {
 		doRedraw();
 	}
 
-	
 	public float getXScale() {
 		if (slides.size() == 0)
 			return 0;
@@ -210,6 +216,11 @@ public class SlideView extends JPanel {
 	}
 	
 	public void doTouchEvent(int action, float X, float Y) {
+		
+		if(!doTouchEvent) {
+			doTouchEvent = true;
+		}
+		
 		// System.out.println("doTouchEvent " + action + " " + X + " " + Y);
 		if (slides.size() == 0)
 			return;
