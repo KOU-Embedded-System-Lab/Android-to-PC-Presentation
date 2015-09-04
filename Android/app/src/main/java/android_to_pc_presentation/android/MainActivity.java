@@ -165,6 +165,8 @@ public class MainActivity extends Activity {
 	public void button_prevSlideClicked(View view) {
 		slideView.prevSlide();
 	}
+
+	public void button_sendSlideClicked(View view) { slideView.sendChangedSlide(); }
 	
 	public void paintClicked(View view) {
 		if (view != currPaint) {
