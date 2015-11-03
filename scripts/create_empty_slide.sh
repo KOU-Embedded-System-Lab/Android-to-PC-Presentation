@@ -10,6 +10,4 @@ do
    cp bos.png $DIR/x-$i.png
 done
 
-echo "$i" > $DIR/info.txt
-
 ./create_empty_draw.sh $DIR
